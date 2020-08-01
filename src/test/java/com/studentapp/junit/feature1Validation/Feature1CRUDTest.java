@@ -1,105 +1,53 @@
 package com.studentapp.junit.feature1Validation;
 
-import java.util.HashMap;
-
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import com.app.model.AccountDetailModel;
-import com.app.model.UserModel;
+import com.studentapp.cucumber.serenity.UserSerenitySteps;
 import com.studentapp.testbase.TestBase;
-import com.studentapp.utils.TestUtils;
+import com.studentapp.utils.ReusableSpecifications;
 
-import io.restassured.http.ContentType;
 import net.serenitybdd.junit.runners.SerenityRunner;
-import net.serenitybdd.rest.SerenityRest;
+import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.Title;
-import static org.hamcrest.Matchers.hasValue;
-import static org.junit.Assert.assertThat;
+
 
 @RunWith(SerenityRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Feature1CRUDTest extends TestBase{
 	
 	// CRUD - create, read, update, delete
+	@Steps
+	UserSerenitySteps steps;
+	
 	
 	@Title("This test will create a new User in list")
 	@Test
 	public void test001() {
-//		AccountDetailModel newAccount = new AccountDetailModel();
-//		newAccount.setId(20);
-//		newAccount.setEmail("testId@gmail.com");
-//		newAccount.setFirst_name("Test_First_Name");
-//		newAccount.setLast_name("Test_Last_Name");
-//		newAccount.setAvatar("Test_Avatar_JPG");
-		
-		UserModel newUser = new UserModel();
-		newUser.setName(TestUtils.getRandomName());
-		newUser.setJob("leader");
-		
-		SerenityRest
-		.rest()
-		.given()
-		.contentType(ContentType.JSON)
-		.log()
-		.all()
-		.when()
-		.body(newUser)
-		.post("/users")
-		.then()
-		.log()
-		.all()
-		.statusCode(201);
+		steps.createUser("Sam", "Software Engineer")
+		.statusCode(201)
+		.spec(ReusableSpecifications.getGenericResponseSpec());
 	}
+	
 	
 	@Title("Verify the User is added to the list")
 	@Test
 	public void test002() {
-//		String fName = "Emma";
-//		
-//		HashMap<String, Object> value = SerenityRest
-//		.rest()
-//		.given()
-//		.when()
-//		.get("/users")
-//		.then()
-//		.log()
-//		.all()
-//		.statusCode(200)
-//		.extract()
-//		.path("findAll{it.firstName=='"+ fName +"'}.get(0)");
-//		
-//		System.out.println("The Value is:" + value);
-//		assertThat(value, hasValue(fName));
+		steps.getUsersInfo()
+		.log().all()
+		.statusCode(200)
+		.spec(ReusableSpecifications.getGenericResponseSpec());
 	}
 	
 	
 	@Title("Update the User information and verify the User info in the list")
 	@Test
 	public void test003() {
-		String updatedJob = "worker";
-		
-		UserModel newUser = new UserModel();
-		newUser.setName(TestUtils.getRandomName());
-		newUser.setJob(updatedJob);
-		
-		
-		
-		SerenityRest
-		.rest()
-		.given()
-		.contentType(ContentType.JSON)
-		.log()
-		.all()
-		.when()
-		.body(newUser)
-		.put("/users")
-		.then()
-		.log()
-		.all()
-		.statusCode(200);
+		steps.updateUserInfo("Software Developer")
+		.statusCode(200)
+		.spec(ReusableSpecifications.getGenericResponseSpec());
 	}
 	
 	
@@ -107,16 +55,9 @@ public class Feature1CRUDTest extends TestBase{
 	@Test
 	public void test004() {	
 		
-		SerenityRest
-		.rest()
-		.given()
-		.when()
-		.delete("/users/2")
-		.then()
-		.log()
-		.all()
+		steps.deleteUser()
+		.log().all()
 		.statusCode(204);	
-		
 	}
 	
 }
